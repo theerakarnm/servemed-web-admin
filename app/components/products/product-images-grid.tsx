@@ -1,9 +1,7 @@
-"use client"
-
 import { useState } from "react"
 import { Edit, Trash, Star, StarOff, ArrowUp, ArrowDown } from "lucide-react"
-import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent } from "@workspace/ui/components/card"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@workspace/ui/components/alert-dialog"
+} from "~/components/ui/alert-dialog"
 import { toast } from 'sonner'
 
 interface ProductImage {

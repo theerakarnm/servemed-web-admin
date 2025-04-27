@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm"
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "~/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { Link, useLoaderData } from "@remix-run/react"
-import { db } from "@workspace/db/src"
-import { productImages } from "@workspace/db/src/schema"
+import { db } from "../db/db.server"
+import { productImages } from "../db/schema"
 import { ProductImagesGrid } from "~/components/products/product-images-grid"
 import MainLayout from "~/layouts/MainLayout"
 

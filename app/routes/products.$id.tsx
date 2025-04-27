@@ -1,6 +1,6 @@
 import { useLoaderData } from "@remix-run/react"
-import { db } from "@workspace/db/src"
-import { productCategories, products } from "@workspace/db/src/schema"
+import { db } from "../db/db.server"
+import { productCategories, products } from "../db/schema"
 import { eq } from "drizzle-orm"
 import { ProductForm } from "~/components/products/product-form"
 import MainLayout from "~/layouts/MainLayout"

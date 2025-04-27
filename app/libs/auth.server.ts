@@ -1,4 +1,4 @@
-import { db, schema } from "@workspace/db/src";
+import { db, schema } from "../db/db.server";
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 

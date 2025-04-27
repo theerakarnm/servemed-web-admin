@@ -1,7 +1,6 @@
-import { brands } from "@workspace/db/src/schema";
+import { brands } from "../db/schema";
 import { and, desc, eq, gt, isNull, like } from "drizzle-orm";
-import { db } from '../../../../packages/db/src/index';
-import { PAGE_SIZE } from "~/config/pagination";
+import { db } from '~/db/db.server';
 
 // Brand actions
 export async function getBrands({

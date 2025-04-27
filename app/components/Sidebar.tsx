@@ -1,8 +1,6 @@
-"use client";
-
 import { Link, useLocation } from '@remix-run/react';
-import { cn } from '@workspace/ui/lib/utils';
-import { BarChart3, Box, Grid3X3, Home, ImageIcon, Layers, Package, PanelTop, ShoppingBag, Star, Tag } from 'lucide-react';
+import { cn } from '~/libs/utils';
+import { BarChart3, Box, Grid3X3, Home, Package, Star, Tag } from 'lucide-react';
 
 const routes = [
   {

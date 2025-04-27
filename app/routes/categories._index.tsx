@@ -1,4 +1,4 @@
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "~/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { Link, useLoaderData } from "@remix-run/react"
 import { CategoriesTable } from "~/components/categories/category-table"

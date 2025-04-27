@@ -1,4 +1,4 @@
-import { db } from "@workspace/db/src"
+import { db } from "../db/db.server"
 import { useLoaderData } from "@remix-run/react"
 import { ProductForm, type ProductFormValues } from "~/components/products/product-form"
 import MainLayout from "~/layouts/MainLayout"

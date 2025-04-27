@@ -1,4 +1,4 @@
-import { Button } from '@workspace/ui/components/button'
+import { Button } from '~/components/ui/button'
 import React from 'react'
 
 const CreateAdmin = () => {

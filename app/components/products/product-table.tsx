@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table"
 import { Edit, Link, MoreHorizontal, Star, Trash } from "lucide-react"
 
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,10 +20,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import { Input } from "@workspace/ui/components/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table"
-import { Badge } from "@workspace/ui/components/badge"
+} from "~/components/ui/dropdown-menu"
+import { Input } from "~/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
+import { Badge } from "~/components/ui/badge"
 import { toast } from 'sonner'
 
 interface Product {

@@ -5,17 +5,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent } from "@workspace/ui/components/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
-import { Textarea } from "@workspace/ui/components/textarea"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form"
+import { Input } from "~/components/ui/input"
+import { Textarea } from "~/components/ui/textarea"
 import { toast } from "sonner"
-import { jnavigate } from "@workspace/ui/lib/utils"
+import { jnavigate } from "~/libs/utils"
 import { useActionData, useSubmit } from "@remix-run/react"
 import { HTTP_STATUS } from "~/config/http"
 import { Trash2, PlusCircle } from "lucide-react"
-import { Separator } from "@workspace/ui/components/separator"
+import { Separator } from "~/components/ui/separator"
 
 const brandItemSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
@@ -45,7 +45,7 @@ export function BrandForm({ brand }: BrandFormProps = {}) {
     status: number
   }>()
   const submit = useSubmit()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading] = useState(false)
 
   const form = useForm<BrandFormValues>({
     resolver: zodResolver(brandSchema),
@@ -155,7 +155,7 @@ export function BrandForm({ brand }: BrandFormProps = {}) {
                       <FormControl>
                         <Input placeholder="https://example.com/logo.png" {...field} value={field.value || ""} />
                       </FormControl>
-                      <FormDescription>A URL to the brand's logo image.</FormDescription>
+                      <FormDescription>{`A URL to the brand's logo image.`}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

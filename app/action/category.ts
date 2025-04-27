@@ -1,6 +1,6 @@
-import { categories } from "@workspace/db/src/schema";
-import { and, eq, gt, isNull, like, or } from "drizzle-orm";
-import { db } from '../../../../packages/db/src/index';
+import { categories } from "../db/schema";
+import { and, eq, gt, isNull, like } from "drizzle-orm";
+import { db } from '~/db/db.server';
 
 // Category actions
 export async function getCategories({

@@ -1,6 +1,6 @@
-import { products, productVariants, productImages, supplementFacts, productRankings, productCategories, brands } from "@workspace/db/src/schema";
-import { and, eq, or, sql } from "drizzle-orm";
-import { db } from '../../../../packages/db/src/index';
+import { products, productVariants, productImages, supplementFacts, productRankings, productCategories, brands } from "../db/schema";
+import { and, eq, sql } from "drizzle-orm";
+import { db } from '~/db/db.server';
 
 // Product actions
 export async function getProducts() {
@@ -61,7 +61,7 @@ export async function createProductVariant(data: typeof productVariants.$inferIn
 export async function updateProductVariant(id: number, data: Partial<typeof productVariants.$inferInsert>) {
   await db.update(productVariants).set(data).where(eq(productVariants.variantId, id));
 }
-export async function deleteProductVariant(id: number, productId: number) {
+export async function deleteProductVariant(id: number) {
   await db.delete(productVariants).where(eq(productVariants.variantId, id));
 }
 
@@ -111,7 +111,7 @@ export async function updateSupplementFact(id: number, data: Partial<typeof supp
   await db.update(supplementFacts).set(data).where(eq(supplementFacts.factId, id));
 }
 
-export async function deleteSupplementFact(id: number, variantId: number) {
+export async function deleteSupplementFact(id: number) {
   await db.delete(supplementFacts).where(eq(supplementFacts.factId, id));
 }
 
@@ -136,7 +136,7 @@ export async function updateProductRanking(id: number, data: Partial<typeof prod
   await db.update(productRankings).set(data).where(eq(productRankings.rankingId, id));
 }
 
-export async function deleteProductRanking(id: number, productId: number) {
+export async function deleteProductRanking(id: number) {
   await db.delete(productRankings).where(eq(productRankings.rankingId, id));
 }
 

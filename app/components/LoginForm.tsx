@@ -1,8 +1,8 @@
-import { cn, jnavigate } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent } from "@workspace/ui/components/card"
-import { InputPure as Input } from "@workspace/ui/components/inputWithOutForm"
-import { Label } from "@workspace/ui/components/label"
+import { cn, jnavigate } from "~/libs/utils"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { InputPure as Input } from "~/components/ui/inputWithOutForm"
+import { Label } from "~/components/ui/label"
 import { type FormEvent, useState } from "react"
 import { toast } from "sonner"
 
@@ -28,7 +28,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     await authClient.signIn.username({
       ...form,
       fetchOptions: {
-        onError: (error) => {
+        onError: () => {
           toast('เกิดข้อผิดพลาด')
         },
         onSuccess: () => {

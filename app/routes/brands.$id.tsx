@@ -1,8 +1,5 @@
 import type { MetaFunction } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react"
-import { db } from "@workspace/db/src"
-import { brands } from "@workspace/db/src/schema"
-import { eq } from "drizzle-orm"
 import { getBrand } from "~/action/brand"
 import { BrandForm } from "~/components/brands/brand-form"
 import MainLayout from "~/layouts/MainLayout"

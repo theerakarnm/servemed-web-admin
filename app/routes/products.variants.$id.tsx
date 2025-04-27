@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm"
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "~/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { Link, useLoaderData } from "@remix-run/react"
 import { VariantsTable } from "~/components/products/product-variants-table";

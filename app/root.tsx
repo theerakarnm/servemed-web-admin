@@ -8,9 +8,7 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
-import "@workspace/ui/globals.css";
-
-import { Toaster } from "@workspace/ui/components/sonner"
+import "./globals.css";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -37,7 +35,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
-        <Toaster />
         <ScrollRestoration />
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>

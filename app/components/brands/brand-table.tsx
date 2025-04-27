@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table"
 import { Edit, MoreHorizontal, Trash } from "lucide-react"
 
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,11 +20,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import { Input } from "@workspace/ui/components/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@workspace/ui/components/table"
+} from "~/components/ui/dropdown-menu"
+import { Input } from "~/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { toast } from "sonner"
-import { Link, useSearchParams } from "@remix-run/react"
+import { Link } from "@remix-run/react"
 
 interface Brand {
   brandId: number
@@ -36,7 +36,6 @@ interface Brand {
 export function BrandsTable({ data }: { data: Brand[] }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const columns: ColumnDef<Brand>[] = [
     {

@@ -7,19 +7,19 @@ import { z } from "zod"
 import { format } from "date-fns"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 
-import { Button } from "@workspace/ui/components/button"
-import { Card, CardContent } from "@workspace/ui/components/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@workspace/ui/components/form"
-import { Input } from "@workspace/ui/components/input"
-import { Textarea } from "@workspace/ui/components/textarea"
-import { Checkbox } from "@workspace/ui/components/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
-import { Calendar } from "@workspace/ui/components/calendar"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@workspace/ui/components/command"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form"
+import { Input } from "~/components/ui/input"
+import { Textarea } from "~/components/ui/textarea"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
+import { Calendar } from "~/components/ui/calendar"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { toast } from 'sonner'
-import { useLocation, useSubmit } from "@remix-run/react"
-import { cn, jnavigate } from "@workspace/ui/lib/utils"
+import { useSubmit } from "@remix-run/react"
+import { cn, jnavigate } from "~/libs/utils"
 
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
@@ -83,7 +83,6 @@ interface ProductFormProps {
 
 export function ProductForm({ product, brands, categories, selectedCategoryIds = [] }: ProductFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const router = useLocation()
   const submit = useSubmit()
 
   const form = useForm<ProductFormValues>({
@@ -244,7 +243,7 @@ export function ProductForm({ product, brands, categories, selectedCategoryIds =
                       <FormControl>
                         <Input placeholder="https://example.com" {...field} value={field.value || ""} />
                       </FormControl>
-                      <FormDescription>URL to the manufacturer's website.</FormDescription>
+                      <FormDescription>URL to the manufacturer website.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
