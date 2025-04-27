@@ -1,5 +1,5 @@
 # Base image
-FROM oven/bun:1.2-slim AS base
+FROM oven/1.2-slim AS base
 
 # Set working directory
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY . .
 RUN bun run build
 
 # Production image
-FROM oven/bun:1.2-slim AS production
+FROM oven/1.2-slim AS production
 
 # Set working directory
 WORKDIR /app
