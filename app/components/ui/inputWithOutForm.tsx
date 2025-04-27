@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "~/lib/utils"
+import { cn } from "~/libs/utils"
 import type { LucideIcon } from "lucide-react"
 
 const InputPure = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> & {
