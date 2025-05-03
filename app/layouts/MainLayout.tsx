@@ -18,6 +18,8 @@ const MainLayout = (props: Props) => {
   } = useSession()
 
   useEffect(() => {
+    console.log("session", session);
+
     if (!session && !isPending) {
       jnavigate({
         path: "/sign-in",

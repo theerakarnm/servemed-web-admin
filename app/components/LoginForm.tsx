@@ -5,10 +5,11 @@ import { InputPure as Input } from "~/components/ui/inputWithOutForm"
 import { Label } from "~/components/ui/label"
 import { type FormEvent, useState } from "react"
 import { toast } from "sonner"
+import { authClient } from "~/libs/auth-client"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [form, setForm] = useState({
-    username: '',
+    email: '',
     password: ''
   })
 
@@ -24,8 +25,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const { authClient } = await import("~/libs/auth-client")
-    await authClient.signIn.username({
+
+    await authClient.signIn.email({
       ...form,
       fetchOptions: {
         onError: () => {
@@ -55,10 +56,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 </h1>
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="username">ชื่อผู้ใช้</Label>
-                <Input id="username" type="username" placeholder="กรอกชื่อผู้ใช้" required
-                  value={form.username}
-                  onChange={(e) => handleChange('username', e.target.value)} />
+                <Label htmlFor="email">อีเมล</Label>
+                <Input id="email" type="email" placeholder="กรอกอีเมล" required
+                  value={form.email}
+                  onChange={(e) => handleChange('email', e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">

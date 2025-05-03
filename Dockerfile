@@ -1,11 +1,11 @@
 # Base image
-FROM oven/1.2-slim AS base
+FROM oven/bun:1.2-slim AS base
 
 # Set working directory
 WORKDIR /app
 
 # Install dependencies and cache them
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 RUN bun install
 
 # Copy source code
@@ -15,7 +15,7 @@ COPY . .
 RUN bun run build
 
 # Production image
-FROM oven/1.2-slim AS production
+FROM oven/bun:1.2-slim AS production
 
 # Set working directory
 WORKDIR /app

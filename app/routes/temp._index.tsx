@@ -5,10 +5,10 @@ const CreateAdmin = () => {
   async function onSubmit() {
     const { authClient } = await import("~/libs/auth-client")
     await authClient.signUp.email({
-      email: 'admin@servemed.co',
-      name: 'Admin',
-      password: 'password',
-      username: 'admin',
+      email: 'admin3@servemed.co',
+      name: 'Admin3',
+      password: 'password3',
+      username: 'admin3'
     })
   }
 

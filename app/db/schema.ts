@@ -210,6 +210,26 @@ export const productImages = pgTable(
   }]),
 );
 
+export const nutritionFacts = pgTable(
+  "nutrition_facts",
+  {
+    factId: serial("fact_id").primaryKey(),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => products.productId, { onDelete: "cascade" }),
+    ingredient: varchar("ingredient", { length: 255 }).notNull(),
+    amountPerServing: varchar("amount_per_serving", {
+      length: 100,
+    }).notNull(),
+    percentDailyValue: varchar("percent_daily_value", { length: 10 }),
+    displayOrder: integer("display_order").default(0).notNull(),
+    ...commonFields,
+  },
+  (table) => ({
+    productIdx: index("nutrition_product_idx").on(table.productId),
+  }),
+)
+
 export const supplementFacts = pgTable(
   "supplement_facts",
   {

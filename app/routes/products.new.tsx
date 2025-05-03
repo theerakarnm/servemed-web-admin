@@ -19,7 +19,9 @@ export default function NewProductPage() {
           <p className="text-muted-foreground">Create a new product in the system</p>
         </div>
 
-        <ProductForm brands={brandsData} categories={categoriesData} />
+        <ProductForm brands={brandsData} categories={categoriesData} nutritionFacts={[]}
+          productImages={[]}
+          productVariants={[]} />
       </div>
     </MainLayout>
   )
