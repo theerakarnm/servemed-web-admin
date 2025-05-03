@@ -135,6 +135,7 @@ export const products = pgTable(
     warnings: text("warnings"),
     disclaimer: text("disclaimer"),
     isFeatured: boolean("is_featured").default(false),
+    allergenInformation: text("allergen_information"),
     ...commonFields
   },
   (table) => ([{
@@ -168,7 +169,7 @@ export const productVariants = pgTable(
     packageDescription: varchar("package_description", {
       length: 255,
     }).notNull(), // e.g., "90 Count"
-    iHerbStockNumber: varchar("iherb_stock_number", { length: 50 }).unique(),
+    stockNumber: varchar("stock_number", { length: 50 }).unique(),
     upc: varchar("upc", { length: 50 }).unique(),
     price: decimal("price", { precision: 10, scale: 2 }).notNull(),
     currency: varchar("currency", { length: 3 }).notNull(), // e.g., "THB"
@@ -187,7 +188,7 @@ export const productVariants = pgTable(
   (table) => ([{
     productIdx: index("variant_product_idx").on(table.productId),
     stockNumberIdx: index("variant_stock_number_idx").on(
-      table.iHerbStockNumber,
+      table.stockNumber,
     ),
   }]),
 );

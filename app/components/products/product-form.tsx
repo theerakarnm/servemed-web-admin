@@ -128,7 +128,7 @@ interface ProductVariant {
   variantId: number
   productId: number
   packageDescription: string
-  iHerbStockNumber: string | null
+  stockNumber: string | null
   upc: string | null
   price: number
   currency: string

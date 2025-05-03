@@ -33,6 +33,11 @@ export async function getProduct(id: number) {
   return result[0];
 }
 export async function createProduct(data: typeof products.$inferInsert, tx?: PgTx) {
+  if (tx) {
+    return await tx.insert(products).values(data).returning({
+      productId: products.productId,
+    });
+  }
   return await db.insert(products).values(data).returning({
     productId: products.productId,
   });
@@ -59,6 +64,12 @@ export async function getProductVariant(id: number) {
 export async function createProductVariant(data: typeof productVariants.$inferInsert) {
   await db.insert(productVariants).values(data);
 }
+export async function createProductVariants(data: typeof productVariants.$inferInsert[], tx?: PgTx) {
+  if (tx) {
+    return await tx.insert(productVariants).values(data);
+  }
+  await db.insert(productVariants).values(data);
+}
 export async function updateProductVariant(id: number, data: Partial<typeof productVariants.$inferInsert>) {
   await db.update(productVariants).set(data).where(eq(productVariants.variantId, id));
 }
@@ -79,7 +90,11 @@ export async function getProductImage(id: number) {
   return result[0];
 }
 
-export async function createProductImage(data: typeof productImages.$inferInsert) {
+export async function createProductImage(data: typeof productImages.$inferInsert, tx?: PgTx) {
+  if (tx) {
+    return await tx.insert(productImages).values(data);
+  }
+
   await db.insert(productImages).values(data);
 }
 
@@ -150,6 +165,9 @@ export async function getProductCategories(productId?: number) {
 }
 
 export async function createProductCategory(data: typeof productCategories.$inferInsert[], tx?: PgTx) {
+  if (tx) {
+    return await tx.insert(productCategories).values(data);
+  }
   await db.insert(productCategories).values(data);
 }
 
@@ -160,5 +178,16 @@ export async function deleteProductCategory(productId: number, categoryId: numbe
 
 // Product Nutrition actions
 export async function createProductNutritionFacts(data: typeof nutritionFacts.$inferInsert[], tx?: PgTx) {
+  if (tx) {
+    return await tx.insert(nutritionFacts).values(data);
+  }
   await db.insert(nutritionFacts).values(data);
+}
+
+// Product images actions
+export async function createProductImages(data: typeof productImages.$inferInsert[], tx?: PgTx) {
+  if (tx) {
+    return await tx.insert(productImages).values(data);
+  }
+  await db.insert(productImages).values(data);
 }

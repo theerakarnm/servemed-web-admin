@@ -31,7 +31,7 @@ interface ProductVariant {
   variantId: number
   productId: number
   packageDescription: string
-  iHerbStockNumber: string | null
+  stockNumber: string | null
   upc: string | null
   price: number
   currency: string
@@ -80,10 +80,10 @@ export function VariantsTable({ data, productId }: { data: ProductVariant[]; pro
       },
     },
     {
-      accessorKey: "iHerbStockNumber",
+      accessorKey: "stockNumber",
       header: "Stock Number",
       cell: ({ row }) => {
-        const stockNumber = row.getValue("iHerbStockNumber") as string | null
+        const stockNumber = row.getValue("stockNumber") as string | null
         return <div>{stockNumber || "—"}</div>
       },
     },

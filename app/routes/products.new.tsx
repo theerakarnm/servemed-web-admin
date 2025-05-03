@@ -6,8 +6,9 @@ import { createBrand, getBrands } from "~/action/brand"
 import { getCategories } from "~/action/category"
 import type { ActionFunctionArgs } from "@remix-run/node"
 import { HTTP_STATUS } from "~/config/http"
-import { createProduct, createProductCategory, createProductNutritionFacts } from "~/action/product"
+import { createProduct, createProductCategory, createProductImage, createProductImages, createProductNutritionFacts, createProductVariants } from "~/action/product"
 import { text } from "drizzle-orm/gel-core"
+import dayjs from "dayjs"
 
 export default function NewProductPage() {
   const { brandsData, categoriesData } = useLoaderData<typeof loader>()
@@ -40,8 +41,6 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     const parsedData = JSON.parse(data.toString()) as ProductFormValues
 
-    const images = formData.get
-
     db.transaction(async (tx) => {
       try {
         const [returnData] = await createProduct({
@@ -58,7 +57,7 @@ export async function action({ request }: ActionFunctionArgs) {
           otherIngredients: parsedData.otherIngredients,
           warnings: parsedData.warnings,
           disclaimer: parsedData.disclaimer,
-
+          allergenInformation: parsedData.allergenInformation,
         }, tx)
 
         const services: Promise<any>[] = []
@@ -68,7 +67,7 @@ export async function action({ request }: ActionFunctionArgs) {
           productId: returnData.productId
         })), tx))
 
-        if (parsedData.nutritionFacts) {
+        if (parsedData.nutritionFacts && parsedData.nutritionFacts.length > 0) {
           services.push(
             createProductNutritionFacts(parsedData.nutritionFacts?.map(nf => ({
               productId: returnData.productId,
@@ -76,6 +75,31 @@ export async function action({ request }: ActionFunctionArgs) {
               amountPerServing: nf.amountPerServing,
               percentDailyValue: nf.percentDailyValue,
               displayOrder: nf.displayOrder,
+            })), tx)
+          )
+        }
+
+        if (parsedData.images && parsedData.images.length > 0) {
+          services.push(
+            createProductImages(parsedData.images.map(img => ({
+              productId: returnData.productId,
+              imageUrl: img.imageUrl,
+              altText: img.altText,
+              displayOrder: img.displayOrder,
+              isThumbnail: img.isThumbnail,
+            })), tx)
+          )
+        }
+
+        if (parsedData.variants && parsedData.variants.length > 0) {
+          services.push(
+            createProductVariants(parsedData.variants.map(v => ({
+              productId: returnData.productId,
+              packageDescription: v.packageDescription,
+              stockNumber: dayjs().format("YYYYMMDD"),
+              price: v.price.toString(),
+              isInStock: v.isInStock,
+              currency: v.currency,
             })), tx)
           )
         }
