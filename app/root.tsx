@@ -39,9 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
           dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify({
-              env: data?.ENV,
-            })}`,
+            __html: `window.ENV = ${JSON.stringify(data?.ENV)}`,
           }}
         />
         <Scripts />
@@ -58,7 +56,7 @@ export default function App() {
 export async function loader() {
   return Response.json({
     ENV: {
-      PUBLIC_AUTH_API_URL: process.env.PUBLIC_AUTH_API_URL,
+      PUBLIC_SERVEMED_API_ENDPOINT: process.env.PUBLIC_SERVEMED_API_ENDPOINT,
     }
   });
 }

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Check, ChevronsUpDown, PlusCircle, Trash2, X } from "lucide-react"
+import { CalendarIcon, Check, ChevronsUpDown, ImageUpIcon, PlusCircle, Trash2, X } from "lucide-react"
 
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
@@ -21,11 +21,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { toast } from 'sonner'
+import { fileUpload } from "~/libs/file-upload"
 
 const nutritionFactSchema = z.object({
   ingredient: z.string().min(1, "Ingredient name is required"),
   amountPerServing: z.string().min(1, "Amount is required"),
   percentDailyValue: z.string().optional(),
+  displayOrder: z.number().int().min(0).default(0),
 })
 
 const productImageSchema = z.object({
@@ -318,6 +320,31 @@ export function ProductForm({
   const markVariantDeleted = (index: number) => {
     const currentVariant = form.getValues(`variants.${index}`)
     form.setValue(`variants.${index}.isDeleted`, true)
+  }
+
+  const triggerImageDialog = (index: number) => {
+    // Open file input dialog
+    const fileInput = document.createElement("input")
+    fileInput.type = "file"
+    fileInput.accept = "image/*"
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        const reader = new FileReader()
+
+        reader.onloadend = async () => {
+          const image = await fileUpload(file)
+          updateImage(index, {
+            ...form.getValues(`images.${index}`),
+            imageUrl: image.file.url,
+            isNew: true,
+            displayOrder: imagesFields.length,
+          })
+        }
+        reader.readAsDataURL(file)
+      }
+    }
+    fileInput.click()
   }
 
   return (
@@ -642,7 +669,7 @@ export function ProductForm({
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        appendNutritionFact({ ingredient: "", amountPerServing: "", percentDailyValue: "" })
+                        appendNutritionFact({ ingredient: "", amountPerServing: "", percentDailyValue: "", displayOrder: nutritionFactsFields.length })
                       }
                     >
                       <PlusCircle className="mr-2 h-4 w-4" />
@@ -731,7 +758,7 @@ export function ProductForm({
                           size="sm"
                           className="mt-2"
                           onClick={() =>
-                            appendNutritionFact({ ingredient: "", amountPerServing: "", percentDailyValue: "" })
+                            appendNutritionFact({ ingredient: "", amountPerServing: "", percentDailyValue: "", displayOrder: nutritionFactsFields.length })
                           }
                         >
                           <PlusCircle className="mr-2 h-4 w-4" />
@@ -821,14 +848,19 @@ export function ProductForm({
                                     className="object-cover"
                                   />
                                 ) : (
-                                  <div className="w-full h-full flex items-center justify-center bg-muted">
-                                    <span className="text-muted-foreground">No image</span>
+                                  <div className="w-full h-full flex items-center justify-center bg-muted"
+                                    onClick={() => triggerImageDialog(index)}
+                                  >
+                                    <span className="text-muted-foreground flex gap-2">
+                                      <ImageUpIcon className="h-6 w-6" />
+                                      Upload Image
+                                    </span>
                                   </div>
                                 )}
                               </div>
                             </div>
 
-                            <FormField
+                            {/* <FormField
                               control={form.control}
                               name={`images.${index}.imageUrl`}
                               render={({ field }) => (
@@ -840,7 +872,7 @@ export function ProductForm({
                                   <FormMessage />
                                 </FormItem>
                               )}
-                            />
+                            /> */}
 
                             <FormField
                               control={form.control}

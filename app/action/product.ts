@@ -1,6 +1,7 @@
-import { products, productVariants, productImages, supplementFacts, productRankings, productCategories, brands } from "../db/schema";
+import { products, productVariants, productImages, supplementFacts, productRankings, productCategories, brands, nutritionFacts } from "../db/schema";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from '~/db/db.server';
+import { PgTx } from "~/interfaces/transaction";
 
 // Product actions
 export async function getProducts() {
@@ -31,7 +32,7 @@ export async function getProduct(id: number) {
   const result = await db.select().from(products).where(eq(products.productId, id)).limit(1);
   return result[0];
 }
-export async function createProduct(data: typeof products.$inferInsert) {
+export async function createProduct(data: typeof products.$inferInsert, tx?: PgTx) {
   return await db.insert(products).values(data).returning({
     productId: products.productId,
   });
@@ -148,11 +149,16 @@ export async function getProductCategories(productId?: number) {
   return await db.select().from(productCategories);
 }
 
-export async function createProductCategory(data: typeof productCategories.$inferInsert[]) {
+export async function createProductCategory(data: typeof productCategories.$inferInsert[], tx?: PgTx) {
   await db.insert(productCategories).values(data);
 }
 
 export async function deleteProductCategory(productId: number, categoryId: number) {
   await db.delete(productCategories)
     .where(and(eq(productCategories.productId, productId), eq(productCategories.categoryId, categoryId)))
+}
+
+// Product Nutrition actions
+export async function createProductNutritionFacts(data: typeof nutritionFacts.$inferInsert[], tx?: PgTx) {
+  await db.insert(nutritionFacts).values(data);
 }

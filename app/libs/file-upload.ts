@@ -2,7 +2,9 @@ export async function fileUpload(file: File) {
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await fetch(process.env.SERVEMED_API_ENDPOINT + "/api/v1/images/upload", {
+  console.log(window.ENV);
+
+  const response = await fetch(window.ENV.PUBLIC_SERVEMED_API_ENDPOINT + "/api/v1/images/upload", {
     method: "POST",
     body: formData,
   });
@@ -30,7 +32,9 @@ export async function fileUploadBulk(files: File[]) {
     formData.append("images", file);
   }
 
-  const response = await fetch(process.env.SERVEMED_API_ENDPOINT + "/api/v1/images/bulk-upload", {
+
+
+  const response = await fetch(window.ENV.PUBLIC_SERVEMED_API_ENDPOINT + "/api/v1/images/bulk-upload", {
     method: "POST",
     body: formData,
   });
