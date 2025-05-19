@@ -1,11 +1,16 @@
-import { useLoaderData } from "@remix-run/react"
-import { db } from "../db/db.server"
-import { productCategories, products } from "../db/schema"
-import { eq } from "drizzle-orm"
-import { ProductForm } from "~/components/products/product-form"
-import MainLayout from "~/layouts/MainLayout"
+import { useLoaderData } from "@remix-run/react";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { deleteProduct } from "~/action/product";
+import {
+  deleteProduct,
+  getProduct,
+  getProductCategories,
+  getProductImages,
+  getProductVariants,
+} from "~/action/product";
+import { getBrands } from "~/action/brand";
+import { getCategories } from "~/action/category";
+import { ProductForm } from "~/components/products/product-form";
+import MainLayout from "~/layouts/MainLayout";
 import { HTTP_STATUS } from "~/config/http";
 
 export const meta: MetaFunction = () => {
@@ -21,6 +26,8 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     selectedCategoryIds,
     brandsData,
     categoriesData,
+    productImages,
+    productVariants,
   } = useLoaderData<typeof loader>()
 
   return (
@@ -36,6 +43,8 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           brands={brandsData}
           categories={categoriesData}
           selectedCategoryIds={selectedCategoryIds}
+          productImages={productImages}
+          productVariants={productVariants}
 
         />
       </div>
@@ -50,62 +59,28 @@ export async function loader({ params }: { params: { id: string } }) {
     throw new Response("Product not found", { status: 404 })
   }
 
-  // const product = await db.query.products.findFirst({
-  //   where: eq(products.productId, productId),
-  // })
-
-  const product = {
-    productId: 1,
-    brandId: 101,
-    name: "Organic Vitamin C Supplement",
-    baseDescription: "A high-quality organic vitamin C supplement.",
-    overallRating: 4.75,
-    totalReviews: 120,
-    totalQuestions: 15,
-    dateFirstAvailable: new Date(),
-    manufacturerWebsiteUrl: "https://example.com/vitamin-c",
-    isuraVerified: true,
-    nonGmoDocumentation: true,
-    massSpecLabTested: true,
-    detailedDescription:
-      "This organic vitamin C supplement is derived from natural sources and is designed to support immune health and overall wellness.",
-    suggestedUse: "Take one capsule daily with a meal or as directed by your healthcare provider.",
-    otherIngredients: "Vegetable cellulose (capsule), organic rice flour.",
-    warnings: "Keep out of reach of children. Consult your healthcare provider before use.",
-    disclaimer: "These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.",
-    allergenInformation: null,
-  }
+  const [product, productCategoriesData, images, variants, brandsData, categoriesData] = await Promise.all([
+    getProduct(productId),
+    getProductCategories(productId),
+    getProductImages(productId),
+    getProductVariants(productId),
+    getBrands(),
+    getCategories(),
+  ])
 
   if (!product) {
     throw new Response("Product not found", { status: 404 })
   }
 
-  // Get product categories
-  // const productCategoriesData = await db
-  //   .select({
-  //     categoryId: productCategories.categoryId,
-  //   })
-  //   .from(productCategories)
-  //   .where(eq(productCategories.productId, productId))
-  const productCategoriesData = [{
-    categoryId: 1
-  }]
-
   const selectedCategoryIds = productCategoriesData.map((pc) => pc.categoryId)
-
-  // const brandsData = await db.select().from(brands)
-  // const categoriesData = await db.select().from(categories)
 
   return {
     product,
     selectedCategoryIds,
-    brandsData: [],
-    categoriesData: [{
-      categoryId: 1,
-      name: 'Supplement',
-      parentCategoryId: null,
-      description: 'supplement'
-    }],
+    brandsData,
+    categoriesData,
+    productImages: images,
+    productVariants: variants,
   }
 
 }
