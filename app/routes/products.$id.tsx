@@ -78,14 +78,30 @@ export async function loader({ params }: { params: { id: string } }) {
 
   const selectedCategoryIds = productCategoriesData.map((pc) => pc.categoryId)
 
+  const normalizedProduct = {
+    ...product,
+    overallRating: product.overallRating ? Number(product.overallRating) : null,
+    dateFirstAvailable: product.dateFirstAvailable
+      ? new Date(product.dateFirstAvailable)
+      : null,
+  }
+
+  const normalizedVariants = variants.map((v) => ({
+    ...v,
+    price: Number(v.price),
+    listPrice: v.listPrice ? Number(v.listPrice) : null,
+    shippingWeightKg: v.shippingWeightKg ? Number(v.shippingWeightKg) : null,
+    bestByDate: v.bestByDate ? new Date(v.bestByDate) : null,
+  }))
+
   return {
-    product,
+    product: normalizedProduct,
     selectedCategoryIds,
     brandsData,
     categoriesData,
     nutritionFacts: nutritionFactsData,
     productImages: images,
-    productVariants: variants,
+    productVariants: normalizedVariants,
   }
 
 }
