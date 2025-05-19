@@ -6,6 +6,7 @@ import {
   getProductCategories,
   getProductImages,
   getProductVariants,
+  getProductNutritionFacts,
 } from "~/action/product";
 import { getBrands } from "~/action/brand";
 import { getCategories } from "~/action/category";
@@ -26,6 +27,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     selectedCategoryIds,
     brandsData,
     categoriesData,
+    nutritionFacts,
     productImages,
     productVariants,
   } = useLoaderData<typeof loader>()
@@ -43,6 +45,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           brands={brandsData}
           categories={categoriesData}
           selectedCategoryIds={selectedCategoryIds}
+          nutritionFacts={nutritionFacts}
           productImages={productImages}
           productVariants={productVariants}
 
@@ -59,11 +62,12 @@ export async function loader({ params }: { params: { id: string } }) {
     throw new Response("Product not found", { status: 404 })
   }
 
-  const [product, productCategoriesData, images, variants, brandsData, categoriesData] = await Promise.all([
+  const [product, productCategoriesData, images, variants, nutritionFactsData, brandsData, categoriesData] = await Promise.all([
     getProduct(productId),
     getProductCategories(productId),
     getProductImages(productId),
     getProductVariants(productId),
+    getProductNutritionFacts(productId),
     getBrands(),
     getCategories(),
   ])
@@ -79,6 +83,7 @@ export async function loader({ params }: { params: { id: string } }) {
     selectedCategoryIds,
     brandsData,
     categoriesData,
+    nutritionFacts: nutritionFactsData,
     productImages: images,
     productVariants: variants,
   }

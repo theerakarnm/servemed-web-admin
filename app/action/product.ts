@@ -184,6 +184,13 @@ export async function createProductNutritionFacts(data: typeof nutritionFacts.$i
   await db.insert(nutritionFacts).values(data);
 }
 
+export async function getProductNutritionFacts(productId?: number) {
+  if (productId) {
+    return await db.select().from(nutritionFacts).where(eq(nutritionFacts.productId, productId));
+  }
+  return await db.select().from(nutritionFacts);
+}
+
 // Product images actions
 export async function createProductImages(data: typeof productImages.$inferInsert[], tx?: PgTx) {
   if (tx) {
