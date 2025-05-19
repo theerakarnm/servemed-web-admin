@@ -3,10 +3,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import MainLayout from "~/layouts/MainLayout"
 import { Package, Tag, Grid3X3, Layers, Link } from "lucide-react"
 import { createAuthClient } from 'better-auth/react';
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { getDashboardData } from "~/action/dashboard";
 
 const { useSession } = createAuthClient()
 
+export async function loader(_args: LoaderFunctionArgs) {
+  return await getDashboardData()
+}
+
 export default function Dashboard() {
+  const { totals, recentProducts, topCategories } =
+    useLoaderData<typeof loader>()
   const {
     data: session,
     isPending, //loading state
@@ -39,8 +48,7 @@ export default function Dashboard() {
                   <Package className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">254</div>
-                  <p className="text-xs text-muted-foreground">+12 from last month</p>
+                  <div className="text-2xl font-bold">{totals.products}</div>
                 </CardContent>
               </Card>
               <Card>
@@ -49,8 +57,7 @@ export default function Dashboard() {
                   <Tag className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">45</div>
-                  <p className="text-xs text-muted-foreground">+3 from last month</p>
+                  <div className="text-2xl font-bold">{totals.brands}</div>
                 </CardContent>
               </Card>
               <Card>
@@ -59,8 +66,7 @@ export default function Dashboard() {
                   <Grid3X3 className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">78</div>
-                  <p className="text-xs text-muted-foreground">+5 from last month</p>
+                  <div className="text-2xl font-bold">{totals.categories}</div>
                 </CardContent>
               </Card>
               <Card>
@@ -69,8 +75,7 @@ export default function Dashboard() {
                   <Layers className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">621</div>
-                  <p className="text-xs text-muted-foreground">+18 from last month</p>
+                  <div className="text-2xl font-bold">{totals.variants}</div>
                 </CardContent>
               </Card>
             </div>
@@ -83,16 +88,19 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="flex items-center gap-4">
+                    {recentProducts.map((p) => (
+                      <div key={p.productId} className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
                           <Package className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium leading-none">Product Name {i}</p>
-                          <p className="text-sm text-muted-foreground">Brand {i} • Added 2 days ago</p>
+                          <p className="text-sm font-medium leading-none">{p.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {p.brandName || "Unknown"} •{' '}
+                            {new Date(p.createdAt).toLocaleDateString()}
+                          </p>
                         </div>
-                        <Link to={`/products/${i}`} className="text-sm text-primary hover:underline">
+                        <Link to={`/products/${p.productId}`} className="text-sm text-primary hover:underline">
                           View
                         </Link>
                       </div>
@@ -107,16 +115,16 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="flex items-center gap-4">
+                    {topCategories.map((c) => (
+                      <div key={c.categoryId} className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
                           <Grid3X3 className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium leading-none">Category {i}</p>
-                          <p className="text-sm text-muted-foreground">{30 - i * 5} products</p>
+                          <p className="text-sm font-medium leading-none">{c.name}</p>
+                          <p className="text-sm text-muted-foreground">{c.productCount} products</p>
                         </div>
-                        <Link to={`/categories/${i}`} className="text-sm text-primary hover:underline">
+                        <Link to={`/categories/${c.categoryId}`} className="text-sm text-primary hover:underline">
                           View
                         </Link>
                       </div>
