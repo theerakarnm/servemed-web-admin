@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
@@ -14,7 +14,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command"
 import { cn, jnavigate } from "~/libs/utils"
 import { toast } from "sonner"
-import { useSubmit } from "@remix-run/react"
+import { useActionData, useSubmit } from "@remix-run/react"
+import { HTTP_STATUS } from "~/config/http"
 
 const categoryItemSchema = z.object({
   name: z.string().min(1, "Category name is required"),
@@ -43,6 +44,9 @@ interface CategoryFormProps {
 export function CategoryForm({ category, categories }: CategoryFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const submit = useSubmit()
+  const actionData = useActionData<{
+    status: number
+  }>()
 
   // Filter out the current category from parent options to prevent circular references
   const parentOptions = category ? categories.filter((cat) => cat.categoryId !== category.categoryId) : categories
@@ -72,6 +76,18 @@ export function CategoryForm({ category, categories }: CategoryFormProps) {
     control: form.control,
     name: "categories",
   })
+
+  useEffect(() => {
+    if (!actionData) return
+    if ([
+      HTTP_STATUS.OK.toString(),
+      HTTP_STATUS.CREATED.toString(),
+    ].includes(actionData.status.toString())) {
+      toast("Category saved successfully.")
+      jnavigate({ path: "/categories" })
+    }
+    setIsLoading(false)
+  }, [actionData])
 
   async function onSubmit(data: CategoryFormValues) {
     setIsLoading(true)
@@ -124,12 +140,8 @@ export function CategoryForm({ category, categories }: CategoryFormProps) {
       //   toast(`${data.categories.length} categories have been created successfully.`)
       // }
 
-      jnavigate({
-        path: "/categories"
-      })
     } catch (error) {
       toast("Something went wrong. Please try again.")
-    } finally {
       setIsLoading(false)
     }
   }

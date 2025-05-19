@@ -10,7 +10,8 @@ import {
   type ColumnFiltersState,
   getFilteredRowModel,
 } from "@tanstack/react-table"
-import { Edit, Link, MoreHorizontal, Star, Trash } from "lucide-react"
+import { Edit, MoreHorizontal, Star, Trash } from "lucide-react"
+import { Link } from "@remix-run/react"
 
 import { Button } from "~/components/ui/button"
 import {
