@@ -1,4 +1,3 @@
-import { BrandForm } from "~/components/brands/brand-form";
 import MainLayout from "~/layouts/MainLayout";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node"
 import { HTTP_STATUS } from "~/config/http";
@@ -19,8 +18,8 @@ export default function NewCategoryPage() {
     <MainLayout>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Add Brand</h1>
-          <p className="text-muted-foreground">Create a new brand in the system</p>
+          <h1 className="text-3xl font-bold tracking-tight">Add Category</h1>
+          <p className="text-muted-foreground">Create a new category in the system</p>
         </div>
         <CategoryForm categories={categories} />
       </div>

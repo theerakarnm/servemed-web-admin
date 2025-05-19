@@ -1,9 +1,15 @@
-import { useLoaderData } from "@remix-run/react"
-import { db } from "@workspace/db/src"
-import { productCategories, products } from "@workspace/db/src/schema"
-import { eq } from "drizzle-orm"
-import { ProductForm } from "~/components/products/product-form"
-import MainLayout from "~/layouts/MainLayout"
+import { useLoaderData } from "@remix-run/react";
+import { ProductForm } from "~/components/products/product-form";
+import MainLayout from "~/layouts/MainLayout";
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { deleteProduct } from "~/action/product";
+import { HTTP_STATUS } from "~/config/http";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Product Edit - SERVEMED" },
+  ];
+};
 
 export default function EditProductPage({ params }: { params: { id: string } }) {
 
@@ -97,4 +103,19 @@ export async function loader({ params }: { params: { id: string } }) {
     }],
   }
 
+}
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const productId = Number.parseInt(params.id || "");
+
+  if (Number.isNaN(productId)) {
+    throw new Response("Invalid product ID", { status: 400 });
+  }
+
+  if (request.method === "DELETE") {
+    await deleteProduct(productId);
+    return new Response(null, { status: HTTP_STATUS.OK });
+  }
+
+  return new Response("Method Not Allowed", { status: 405 });
 }
