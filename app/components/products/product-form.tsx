@@ -22,6 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { toast } from 'sonner'
 import { fileUpload } from "~/libs/file-upload"
+import { useSubmit } from "@remix-run/react"
 
 const nutritionFactSchema = z.object({
   ingredient: z.string().min(1, "Ingredient name is required"),
@@ -161,6 +162,7 @@ export function ProductForm({
   productVariants = [],
 }: ProductFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const submit = useSubmit();
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -253,28 +255,27 @@ export function ProductForm({
     }
   }, [form.getValues("images")])
 
+  console.log('error', {
+    errors: form.formState.errors,
+    nutritionFactsFields,
+    imagesFields,
+    variantsFields,
+  });
+
+
   async function onSubmit(data: ProductFormValues) {
+    console.log(data);
+
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/products", {
+      const formData = new FormData()
+      formData.append('data', JSON.stringify(data))
+
+      submit(formData, {
+        action: product ? `/products/${product.productId}` : "/products/new",
         method: product ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...data,
-          productId: product?.productId,
-        }),
       })
-
-      if (!response.ok) {
-        throw new Error("Failed to save product")
-      }
-
-      toast(product
-        ? "Your product has been updated successfully."
-        : "Your product has been created successfully.",)
 
       jnavigate({
         path: "/products",

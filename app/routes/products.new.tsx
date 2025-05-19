@@ -47,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
           brandId: parsedData.brandId,
           name: parsedData.name,
           baseDescription: parsedData.baseDescription,
-          dateFirstAvailable: parsedData.dateFirstAvailable?.toISOString(),
+          dateFirstAvailable: dayjs(parsedData.dateFirstAvailable).toISOString(),
           manufacturerWebsiteUrl: parsedData.manufacturerWebsiteUrl,
           isuraVerified: parsedData.isuraVerified,
           nonGmoDocumentation: parsedData.nonGmoDocumentation,
@@ -96,7 +96,7 @@ export async function action({ request }: ActionFunctionArgs) {
             createProductVariants(parsedData.variants.map(v => ({
               productId: returnData.productId,
               packageDescription: v.packageDescription,
-              stockNumber: dayjs().format("YYYYMMDD"),
+              stockNumber: `${dayjs().format("YYYYMMDD")}-${Math.floor(Math.random() * 999999)}`,
               price: v.price.toString(),
               isInStock: v.isInStock,
               currency: v.currency,
@@ -111,12 +111,14 @@ export async function action({ request }: ActionFunctionArgs) {
       }
     })
 
-
     return {
       status: HTTP_STATUS.CREATED
     }
   } catch (error) {
-    throw new Response("Invalid JSON data", { status: HTTP_STATUS.BAD_REQUEST })
+    return {
+      status: HTTP_STATUS.BAD_REQUEST,
+      message: "Invalid data"
+    }
   }
 }
 
