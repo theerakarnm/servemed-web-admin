@@ -73,6 +73,7 @@ export async function loader({ params }: { params: { id: string } }) {
     otherIngredients: "Vegetable cellulose (capsule), organic rice flour.",
     warnings: "Keep out of reach of children. Consult your healthcare provider before use.",
     disclaimer: "These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.",
+    allergenInformation: null,
   }
 
   if (!product) {

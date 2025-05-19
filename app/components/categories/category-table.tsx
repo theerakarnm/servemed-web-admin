@@ -95,6 +95,7 @@ export function CategoriesTable({ data }: { data: Category[] }) {
                     submit(null, {
                       method: 'DELETE',
                       action: `/categories/${category.categoryId}`,
+                      navigate: false,
                     })
                   }
                 }}
