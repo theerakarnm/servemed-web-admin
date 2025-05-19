@@ -25,6 +25,7 @@ import { Input } from "~/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { Badge } from "~/components/ui/badge"
 import { toast } from 'sonner'
+import { useSubmit } from "@remix-run/react"
 
 interface Product {
   productId: number
@@ -40,6 +41,7 @@ interface Product {
 export function ProductsTable({ data }: { data: Product[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const submit = useSubmit()
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -142,7 +144,12 @@ export function ProductsTable({ data }: { data: Product[] }) {
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => {
-                  toast('Not implemented')
+                  if (confirm('Are you sure you want to delete this product?')) {
+                    submit(null, {
+                      method: 'DELETE',
+                      action: `/products/${product.productId}`,
+                    })
+                  }
                 }}
               >
                 <Trash className="mr-2 h-4 w-4" />

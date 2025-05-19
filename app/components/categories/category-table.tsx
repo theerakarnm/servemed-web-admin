@@ -24,7 +24,7 @@ import {
 import { Input } from "~/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
 import { toast } from 'sonner'
-import { Link } from "@remix-run/react"
+import { Link, useSubmit } from "@remix-run/react"
 
 interface Category {
   categoryId: number
@@ -36,6 +36,7 @@ interface Category {
 export function CategoriesTable({ data }: { data: Category[] }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const submit = useSubmit()
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -90,7 +91,12 @@ export function CategoriesTable({ data }: { data: Category[] }) {
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => {
-                  toast('Not implemented')
+                  if (confirm('Are you sure you want to delete this category?')) {
+                    submit(null, {
+                      method: 'DELETE',
+                      action: `/categories/${category.categoryId}`,
+                    })
+                  }
                 }}
               >
                 <Trash className="mr-2 h-4 w-4" />

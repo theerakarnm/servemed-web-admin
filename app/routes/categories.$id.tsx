@@ -1,11 +1,9 @@
-
-import type { MetaFunction } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
-import { db } from "../db/db.server"
-import { brands } from "../db/schema"
-import { eq } from "drizzle-orm"
-import { BrandForm } from "~/components/brands/brand-form"
-import MainLayout from "~/layouts/MainLayout"
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { CategoryForm } from "~/components/categories/category-form";
+import MainLayout from "~/layouts/MainLayout";
+import { deleteCategory, getCategories, getCategory } from "~/action/category";
+import { HTTP_STATUS } from "~/config/http";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,42 +11,53 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function EditBrandPage({ params }: { params: { id: string } }) {
-  const { brand } = useLoaderData<typeof loader>()
+export default function EditCategoryPage() {
+  const { category, categories } = useLoaderData<typeof loader>();
 
   return (
     <MainLayout>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Edit Brand</h1>
-          <p className="text-muted-foreground">Update brand information</p>
+          <h1 className="text-3xl font-bold tracking-tight">Edit Category</h1>
+          <p className="text-muted-foreground">Update category information</p>
         </div>
 
-        <BrandForm brand={brand} />
+        <CategoryForm category={category} categories={categories} />
       </div>
     </MainLayout>
-  )
+  );
 }
 
 export async function loader({ params }: { params: { id: string } }) {
-  const brandId = Number.parseInt(params.id)
+  const categoryId = Number.parseInt(params.id);
 
-  if (Number.isNaN(brandId)) {
-    throw new Response("Invalid brand ID", { status: 400 })
+  if (Number.isNaN(categoryId)) {
+    throw new Response("Invalid category ID", { status: 400 });
   }
 
-  // const [brand] = await db.select().from(brands).where(eq(brands.brandId, brandId)).limit(1);
+  const [category, categories] = await Promise.all([
+    getCategory(categoryId),
+    getCategories(),
+  ]);
 
-  const brand = {
-    brandId: brandId,
-    name: "Sample Brand",
-    description: "This is a sample brand description.",
-    logoUrl: "https://example.com/logo.png",
+  if (!category) {
+    throw new Response("Category not found", { status: 404 });
   }
 
-  if (!brand) {
-    throw new Response("Brand not found", { status: 404 })
+  return { category, categories };
+}
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const categoryId = Number.parseInt(params.id || "");
+
+  if (Number.isNaN(categoryId)) {
+    throw new Response("Invalid category ID", { status: 400 });
   }
 
-  return { brand }
+  if (request.method === "DELETE") {
+    await deleteCategory(categoryId);
+    return new Response(null, { status: HTTP_STATUS.OK });
+  }
+
+  return new Response("Method Not Allowed", { status: 405 });
 }
