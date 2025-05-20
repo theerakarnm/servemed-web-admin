@@ -11,6 +11,7 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { Check, MoreHorizontal, X } from "lucide-react";
+import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -107,6 +108,9 @@ export function OrdersTable({ data }: { data: Order[] }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to={`/orders/${order.orderId}`}>View Detail</Link>
+              </DropdownMenuItem>
               {!order.paymentVerified && (
                 <DropdownMenuItem
                   onClick={() => {
