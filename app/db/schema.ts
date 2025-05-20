@@ -446,6 +446,44 @@ export const customersAlsoViewed = pgTable(
   }]),
 );
 
+export const orders = pgTable(
+  "orders",
+  {
+    orderId: serial("order_id").primaryKey(),
+    customerName: varchar("customer_name", { length: 255 }).notNull(),
+    totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
+    currency: varchar("currency", { length: 10 }).notNull(),
+    paymentVerified: boolean("payment_verified").default(false).notNull(),
+    status: varchar("status", { length: 50 }).notNull(),
+    orderedAt: timestamp("ordered_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    ...commonFields,
+  },
+);
+
+export const orderItems = pgTable(
+  "order_items",
+  {
+    orderItemId: serial("order_item_id").primaryKey(),
+    orderId: integer("order_id")
+      .notNull()
+      .references(() => orders.orderId, { onDelete: "cascade" }),
+    variantId: integer("variant_id")
+      .notNull()
+      .references(() => productVariants.variantId, { onDelete: "cascade" }),
+    quantity: integer("quantity").default(1).notNull(),
+    price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+    ...commonFields,
+  },
+  (table) => ([
+    {
+      orderIdx: index("order_item_order_idx").on(table.orderId),
+      variantIdx: index("order_item_variant_idx").on(table.variantId),
+    },
+  ]),
+);
+
 // --- Drizzle Relations ---
 // Define relationships for ORM querying (e.g., joins, eager loading)
 
@@ -647,3 +685,18 @@ export const customersAlsoViewedRelations = relations(
     }),
   }),
 );
+
+export const ordersRelations = relations(orders, ({ many }) => ({
+  items: many(orderItems),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.orderId],
+  }),
+  variant: one(productVariants, {
+    fields: [orderItems.variantId],
+    references: [productVariants.variantId],
+  }),
+}));
