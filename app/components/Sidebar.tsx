@@ -1,6 +1,6 @@
 import { Link, useLocation } from '@remix-run/react';
 import { cn } from '~/libs/utils';
-import { BarChart3, Box, Grid3X3, Home, Package, Star, Tag } from 'lucide-react';
+import { BarChart3, Box, Grid3X3, Home, Package, Star, Tag, ShoppingCart } from 'lucide-react';
 
 const routes = [
   {
@@ -22,6 +22,11 @@ const routes = [
     label: "Products",
     icon: Package,
     href: "/products",
+  },
+  {
+    label: "Orders",
+    icon: ShoppingCart,
+    href: "/orders",
   },
   // {
   //   label: "Product Variants",
