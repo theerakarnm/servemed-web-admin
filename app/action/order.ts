@@ -5,6 +5,8 @@ import {
   user,
   orderItems,
   products,
+  orderStatusEnum,
+  paymentStatusEnum,
 } from "~/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -17,6 +19,27 @@ export interface Order {
   status: string;
   orderedAt: Date;
 }
+
+export const ORDER_STATUSES = [
+  "pending",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+  "refunded",
+  "failed",
+] as const;
+
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
+export const PAYMENT_STATUSES = [
+  "pending",
+  "successful",
+  "failed",
+  "refunded",
+] as const;
+
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 export async function getOrders(): Promise<Order[]> {
   const rows = await db
@@ -104,4 +127,18 @@ export async function cancelOrder(orderId: number) {
     .update(orders)
     .set({ status: "cancelled" })
     .where(eq(orders.id, orderId));
+}
+
+export async function updateOrderStatus(orderId: number, status: OrderStatus) {
+  await db.update(orders).set({ status }).where(eq(orders.id, orderId));
+}
+
+export async function updatePaymentStatus(
+  orderId: number,
+  status: PaymentStatus,
+) {
+  await db
+    .update(payments)
+    .set({ status })
+    .where(eq(payments.orderId, orderId));
 }
