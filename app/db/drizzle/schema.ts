@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, serial, integer, varchar, boolean, timestamp, date, unique, text, index, numeric, uniqueIndex, jsonb, pgEnum } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, serial, integer, varchar, boolean, timestamp, date, unique, text, index, numeric, jsonb, uniqueIndex, pgEnum } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 export const checkoutStatus = pgEnum("checkout_status", ['pending', 'success', 'failed', 'cancel', 'pending_verify'])
@@ -191,99 +191,6 @@ export const nutritionFacts = pgTable("nutrition_facts", {
 	deletedAt: timestamp("deleted_at", { withTimezone: true, mode: 'string' }),
 }, (table) => [
 	index("nutrition_product_idx").using("btree", table.productId.asc().nullsLast().op("int4_ops")),
-]);
-
-export const addresses = pgTable("addresses", {
-	id: serial().primaryKey().notNull(),
-	userId: text("user_id"),
-	streetLine1: varchar("street_line_1", { length: 255 }).notNull(),
-	streetLine2: varchar("street_line_2", { length: 255 }),
-	city: varchar({ length: 100 }).notNull(),
-	stateOrProvince: varchar("state_or_province", { length: 100 }).notNull(),
-	postalCode: varchar("postal_code", { length: 20 }).notNull(),
-	country: varchar({ length: 50 }).notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("addr_user_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "addresses_user_id_user_id_fk"
-		}).onDelete("cascade"),
-]);
-
-export const orders = pgTable("orders", {
-	id: serial().primaryKey().notNull(),
-	userId: text("user_id").notNull(),
-	status: orderStatus().default('pending').notNull(),
-	totalAmount: numeric("total_amount", { precision: 12, scale:  2 }).notNull(),
-	currency: varchar({ length: 3 }).default('USD').notNull(),
-	shippingAddressId: integer("shipping_address_id").notNull(),
-	billingAddressId: integer("billing_address_id"),
-	notes: text(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("order_billing_addr_idx").using("btree", table.billingAddressId.asc().nullsLast().op("int4_ops")),
-	index("order_shipping_addr_idx").using("btree", table.shippingAddressId.asc().nullsLast().op("int4_ops")),
-	index("order_status_idx").using("btree", table.status.asc().nullsLast().op("enum_ops")),
-	index("order_user_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "orders_user_id_user_id_fk"
-		}).onDelete("restrict"),
-	foreignKey({
-			columns: [table.shippingAddressId],
-			foreignColumns: [addresses.id],
-			name: "orders_shipping_address_id_addresses_id_fk"
-		}).onDelete("restrict"),
-	foreignKey({
-			columns: [table.billingAddressId],
-			foreignColumns: [addresses.id],
-			name: "orders_billing_address_id_addresses_id_fk"
-		}).onDelete("restrict"),
-]);
-
-export const checkouts = pgTable("checkouts", {
-	checkoutId: serial("checkout_id").primaryKey().notNull(),
-	userId: text("user_id").notNull(),
-	amount: numeric({ precision: 10, scale:  2 }).notNull(),
-	status: checkoutStatus().default('pending').notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "checkouts_user_id_user_id_fk"
-		}).onDelete("cascade"),
-]);
-
-export const orderItems = pgTable("order_items", {
-	id: serial().primaryKey().notNull(),
-	orderId: integer("order_id").notNull(),
-	productId: integer("product_id").notNull(),
-	quantity: integer().notNull(),
-	priceAtPurchase: numeric("price_at_purchase", { precision: 10, scale:  2 }).notNull(),
-	currency: varchar({ length: 3 }).default('USD').notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("item_order_idx").using("btree", table.orderId.asc().nullsLast().op("int4_ops")),
-	index("item_product_idx").using("btree", table.productId.asc().nullsLast().op("int4_ops")),
-	uniqueIndex("order_product_unique_idx").using("btree", table.orderId.asc().nullsLast().op("int4_ops"), table.productId.asc().nullsLast().op("int4_ops")),
-	foreignKey({
-			columns: [table.orderId],
-			foreignColumns: [orders.id],
-			name: "order_items_order_id_orders_id_fk"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.productId],
-			foreignColumns: [products.productId],
-			name: "order_items_product_id_products_product_id_fk"
-		}).onDelete("restrict"),
 ]);
 
 export const verification = pgTable("verification", {
@@ -508,6 +415,140 @@ export const products = pgTable("products", {
 		}),
 ]);
 
+export const checkouts = pgTable("checkouts", {
+	checkoutId: serial("checkout_id").primaryKey().notNull(),
+	userId: text("user_id").notNull(),
+	amount: numeric({ precision: 10, scale:  2 }).notNull(),
+	status: checkoutStatus().default('pending').notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "checkouts_user_id_user_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const userProductInteractions = pgTable("user_product_interactions", {
+	id: serial().primaryKey().notNull(),
+	userId: text("user_id").notNull(),
+	productId: integer("product_id").notNull(),
+	interactionType: varchar("interaction_type", { length: 50 }).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	index("upi_product_idx").using("btree", table.productId.asc().nullsLast().op("int4_ops")),
+	index("upi_user_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "user_product_interactions_user_id_user_id_fk"
+		}).onDelete("cascade"),
+	foreignKey({
+			columns: [table.productId],
+			foreignColumns: [products.productId],
+			name: "user_product_interactions_product_id_products_product_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const addresses = pgTable("addresses", {
+	id: serial().primaryKey().notNull(),
+	userId: text("user_id"),
+	streetLine1: varchar("street_line_1", { length: 255 }).notNull(),
+	streetLine2: varchar("street_line_2", { length: 255 }),
+	city: varchar({ length: 100 }).notNull(),
+	stateOrProvince: varchar("state_or_province", { length: 100 }).notNull(),
+	postalCode: varchar("postal_code", { length: 20 }).notNull(),
+	country: varchar({ length: 50 }).notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	firstName: varchar("first_name", { length: 100 }).notNull(),
+	lastName: varchar("last_name", { length: 100 }).notNull(),
+	phone: varchar({ length: 20 }),
+}, (table) => [
+	index("addr_user_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "addresses_user_id_user_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const configs = pgTable("configs", {
+	key: text().primaryKey().notNull(),
+	value: jsonb().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	deletedAt: timestamp("deleted_at", { withTimezone: true, mode: 'string' }),
+	createdBy: text("created_by").notNull(),
+	updatedBy: text("updated_by").notNull(),
+});
+
+export const orderItems = pgTable("order_items", {
+	id: serial().primaryKey().notNull(),
+	orderId: integer("order_id").notNull(),
+	productId: integer("product_id").notNull(),
+	quantity: integer().notNull(),
+	priceAtPurchase: numeric("price_at_purchase", { precision: 10, scale:  2 }).notNull(),
+	currency: varchar({ length: 3 }).default('USD').notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	index("item_order_idx").using("btree", table.orderId.asc().nullsLast().op("int4_ops")),
+	index("item_product_idx").using("btree", table.productId.asc().nullsLast().op("int4_ops")),
+	uniqueIndex("order_product_unique_idx").using("btree", table.orderId.asc().nullsLast().op("int4_ops"), table.productId.asc().nullsLast().op("int4_ops")),
+	foreignKey({
+			columns: [table.orderId],
+			foreignColumns: [orders.id],
+			name: "order_items_order_id_orders_id_fk"
+		}).onDelete("cascade"),
+	foreignKey({
+			columns: [table.productId],
+			foreignColumns: [products.productId],
+			name: "order_items_product_id_products_product_id_fk"
+		}).onDelete("restrict"),
+]);
+
+export const orders = pgTable("orders", {
+	id: serial().primaryKey().notNull(),
+	userId: text("user_id").notNull(),
+	status: orderStatus().default('pending').notNull(),
+	totalAmount: numeric("total_amount", { precision: 12, scale:  2 }).notNull(),
+	currency: varchar({ length: 3 }).default('THB').notNull(),
+	shippingAddressId: integer("shipping_address_id").notNull(),
+	billingAddressId: integer("billing_address_id"),
+	notes: text(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	shippingAmount: numeric("shipping_amount", { precision: 12, scale:  2 }).default('0').notNull(),
+	subtotal: numeric({ precision: 12, scale:  2 }).default('0').notNull(),
+	tax: numeric({ precision: 12, scale:  2 }).default('0').notNull(),
+	paymentMethod: varchar("payment_method", { length: 50 }),
+	shippingAddress: jsonb("shipping_address").notNull(),
+	billingAddress: jsonb("billing_address"),
+	paymentSlip: varchar("payment_slip", { length: 512 }),
+}, (table) => [
+	index("order_billing_addr_idx").using("btree", table.billingAddressId.asc().nullsLast().op("int4_ops")),
+	index("order_shipping_addr_idx").using("btree", table.shippingAddressId.asc().nullsLast().op("int4_ops")),
+	index("order_status_idx").using("btree", table.status.asc().nullsLast().op("enum_ops")),
+	index("order_user_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "orders_user_id_user_id_fk"
+		}).onDelete("restrict"),
+	foreignKey({
+			columns: [table.shippingAddressId],
+			foreignColumns: [addresses.id],
+			name: "orders_shipping_address_id_addresses_id_fk"
+		}).onDelete("restrict"),
+	foreignKey({
+			columns: [table.billingAddressId],
+			foreignColumns: [addresses.id],
+			name: "orders_billing_address_id_addresses_id_fk"
+		}).onDelete("restrict"),
+]);
+
 export const payments = pgTable("payments", {
 	id: serial().primaryKey().notNull(),
 	orderId: integer("order_id").notNull(),
@@ -551,26 +592,5 @@ export const shipments = pgTable("shipments", {
 			columns: [table.orderId],
 			foreignColumns: [orders.id],
 			name: "shipments_order_id_orders_id_fk"
-		}).onDelete("cascade"),
-]);
-
-export const userProductInteractions = pgTable("user_product_interactions", {
-	id: serial().primaryKey().notNull(),
-	userId: text("user_id").notNull(),
-	productId: integer("product_id").notNull(),
-	interactionType: varchar("interaction_type", { length: 50 }).notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	index("upi_product_idx").using("btree", table.productId.asc().nullsLast().op("int4_ops")),
-	index("upi_user_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
-	foreignKey({
-			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "user_product_interactions_user_id_user_id_fk"
-		}).onDelete("cascade"),
-	foreignKey({
-			columns: [table.productId],
-			foreignColumns: [products.productId],
-			name: "user_product_interactions_product_id_products_product_id_fk"
 		}).onDelete("cascade"),
 ]);
