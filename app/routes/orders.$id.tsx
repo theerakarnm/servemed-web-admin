@@ -13,12 +13,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { Badge } from "~/components/ui/badge";
 import { Separator } from "~/components/ui/separator";
 
+
 export default function OrderDetailPage() {
   const { order } = useLoaderData<typeof loader>();
-  const slipUrl =
-    (order.paymentProviderDetails as Record<string, unknown> | null)?.slipUrl as
-      | string
-      | undefined;
+  const slipUrl = order.paymentSlip
 
   return (
     <MainLayout>

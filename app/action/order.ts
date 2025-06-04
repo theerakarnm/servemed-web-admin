@@ -56,7 +56,7 @@ export async function getOrderDetail(id: number) {
       notes: orders.notes,
       customerName: user.name,
       paymentStatus: payments.status,
-      paymentProviderDetails: payments,
+      paymentSlip: orders.paymentSlip,
     })
     .from(orders)
     .leftJoin(user, eq(orders.userId, user.id))
@@ -79,7 +79,6 @@ export async function getOrderDetail(id: number) {
   return {
     ...order,
     totalAmount: Number(order.totalAmount),
-    paymentProviderDetails: order.paymentProviderDetails as unknown as Record<string, unknown> | null,
     items: items.map((i) => ({
       ...i,
       price: Number(i.price),
