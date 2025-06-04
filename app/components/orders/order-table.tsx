@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@remix-run/react";
 import {
   type ColumnDef,
   flexRender,
@@ -11,7 +12,6 @@ import {
   getFilteredRowModel,
 } from "@tanstack/react-table";
 import { Check, MoreHorizontal, X } from "lucide-react";
-import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -44,7 +44,14 @@ export function OrdersTable({ data }: { data: Order[] }) {
     {
       accessorKey: "orderId",
       header: "ID",
-      cell: ({ row }) => <div className="w-[80px]">{row.getValue("orderId")}</div>,
+      cell: ({ row }) => {
+        const id = row.getValue("orderId") as number;
+        return (
+          <Link to={`/orders/${id}`} className="underline">
+            {id}
+          </Link>
+        );
+      },
     },
     {
       accessorKey: "customerName",
@@ -109,7 +116,7 @@ export function OrdersTable({ data }: { data: Order[] }) {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to={`/orders/${order.orderId}`}>View Detail</Link>
+                <Link to={`/orders/${order.orderId}`}>View Details</Link>
               </DropdownMenuItem>
               {!order.paymentVerified && (
                 <DropdownMenuItem

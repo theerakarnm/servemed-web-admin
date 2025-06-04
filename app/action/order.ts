@@ -1,15 +1,12 @@
 import { db } from "~/db/db.server";
-import { orders, orderItems, productVariants, products } from "~/db/schema";
+import {
+  orders,
+  payments,
+  user,
+  orderItems,
+  products,
+} from "~/db/schema";
 import { eq } from "drizzle-orm";
-
-export interface OrderItem {
-  orderItemId: number;
-  variantId: number;
-  orderId: number;
-  quantity: number;
-  price: number;
-  name: string | null;
-}
 
 export interface Order {
   orderId: number;
@@ -19,43 +16,91 @@ export interface Order {
   paymentVerified: boolean;
   status: string;
   orderedAt: Date;
-  items?: OrderItem[];
 }
 
 export async function getOrders(): Promise<Order[]> {
-  const orderList = await db.select().from(orders);
-  return orderList.map((o) => ({
-    ...o,
-    totalAmount: Number(o.totalAmount),
-    orderedAt: new Date(o.orderedAt),
+  const rows = await db
+    .select({
+      orderId: orders.id,
+      customerName: user.name,
+      totalAmount: orders.totalAmount,
+      currency: orders.currency,
+      paymentStatus: payments.status,
+      status: orders.status,
+      orderedAt: orders.createdAt,
+    })
+    .from(orders)
+    .leftJoin(user, eq(orders.userId, user.id))
+    .leftJoin(payments, eq(payments.orderId, orders.id));
+
+  return rows.map((r) => ({
+    orderId: r.orderId,
+    customerName: r.customerName ?? "Unknown",
+    totalAmount: Number(r.totalAmount),
+    currency: r.currency,
+    paymentVerified: r.paymentStatus === "successful",
+    status: r.status,
+    orderedAt: r.orderedAt,
   }));
 }
 
-export async function getOrder(id: number): Promise<Order | undefined> {
-  const [order] = await db.select().from(orders).where(eq(orders.orderId, id));
-  if (!order) return undefined;
+export async function getOrderDetail(id: number) {
+  const [order] = await db
+    .select({
+      id: orders.id,
+      userId: orders.userId,
+      status: orders.status,
+      totalAmount: orders.totalAmount,
+      currency: orders.currency,
+      createdAt: orders.createdAt,
+      notes: orders.notes,
+      customerName: user.name,
+      paymentStatus: payments.status,
+    })
+    .from(orders)
+    .leftJoin(user, eq(orders.userId, user.id))
+    .leftJoin(payments, eq(payments.orderId, orders.id))
+    .where(eq(orders.id, id));
+
+  if (!order) return null;
 
   const items = await db
     .select({
-      orderItemId: orderItems.orderItemId,
-      variantId: orderItems.variantId,
-      orderId: orderItems.orderId,
+      productId: orderItems.productId,
       quantity: orderItems.quantity,
-      price: orderItems.price,
+      price: orderItems.priceAtPurchase,
       name: products.name,
     })
     .from(orderItems)
-    .leftJoin(productVariants, eq(orderItems.variantId, productVariants.variantId))
-    .leftJoin(products, eq(productVariants.productId, products.productId))
+    .leftJoin(products, eq(orderItems.productId, products.productId))
     .where(eq(orderItems.orderId, id));
 
   return {
     ...order,
     totalAmount: Number(order.totalAmount),
-    orderedAt: new Date(order.orderedAt),
     items: items.map((i) => ({
       ...i,
       price: Number(i.price),
     })),
   };
+}
+
+export async function verifyPayment(orderId: number) {
+  await db.transaction(async (tx) => {
+    await tx
+      .update(payments)
+      .set({ status: "successful" })
+      .where(eq(payments.orderId, orderId));
+    await tx
+      .update(orders)
+      .set({ status: "processing" })
+      .where(eq(orders.id, orderId));
+  });
+}
+
+export async function cancelOrder(orderId: number) {
+  await db
+    .update(orders)
+    .set({ status: "cancelled" })
+    .where(eq(orders.id, orderId));
 }
