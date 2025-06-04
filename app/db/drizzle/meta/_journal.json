@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1744712131722,
-      "tag": "0000_common_ikaris",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1744806055471,
-      "tag": "0001_careless_gabe_jones",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1745405935663,
-      "tag": "0002_loud_mysterio",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1746296636662,
-      "tag": "0003_first_mentallo",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1746297228755,
-      "tag": "0004_friendly_umar",
+      "when": 1749063877184,
+      "tag": "0000_confused_romulus",
       "breakpoints": true
     }
   ]

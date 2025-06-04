@@ -56,7 +56,7 @@ export async function getOrderDetail(id: number) {
       notes: orders.notes,
       customerName: user.name,
       paymentStatus: payments.status,
-      paymentProviderDetails: payments.providerDetails,
+      paymentProviderDetails: payments,
     })
     .from(orders)
     .leftJoin(user, eq(orders.userId, user.id))
